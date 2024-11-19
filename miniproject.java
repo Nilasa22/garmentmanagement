@@ -1,165 +1,90 @@
-package garmentmanagement;
+package apparelsystem;
 
-import java.util.List;
-import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-public class GarmentManagement {
-
-    public static void main(String[] args) {
-
-        Scanner input = new Scanner(System.in);
-
-        // Fabric input
-        System.out.print("Enter Fabric Code: ");
-        String fabricCode = input.nextLine();
-        System.out.print("Enter Fabric Category: ");
-        String fabricCategory = input.nextLine();
-        System.out.print("Enter Fabric Shade: ");
-        String fabricShade = input.nextLine();
-        System.out.print("Enter Cost Per Meter of Fabric: ");
-        double costPerMeter = input.nextDouble();
-        System.out.println("================================");
-        input.nextLine();
-
-        // Create Fabric instance
-        Material material = new Material(fabricCode, fabricCategory, fabricShade, costPerMeter);
-
-        // Garment input
-        System.out.print("Enter Garment Code: ");
-        String garmentCode = input.nextLine();
-        System.out.print("Enter Garment Title: ");
-        String garmentTitle = input.nextLine();
-        System.out.print("Enter Garment Details: ");
-        String garmentDetails = input.nextLine();
-        System.out.print("Enter Garment Size: ");
-        String garmentSize = input.nextLine();
-        System.out.print("Enter Garment Color: ");
-        String garmentColor = input.nextLine();
-        System.out.print("Enter Garment Price: ");
-        double garmentPrice = input.nextDouble();
-        System.out.print("Enter Available Stock: ");
-        int availableStock = input.nextInt();
-        System.out.println("================================");
-        input.nextLine();
-
-        // Create Garment instance
-        Apparel apparel = new Apparel(garmentCode, garmentTitle, garmentDetails, garmentSize, garmentColor, garmentPrice, availableStock, material);
-
-        // Customer input
-        System.out.print("Enter Buyer ID: ");
-        String buyerId = input.nextLine();
-        System.out.print("Enter Buyer Name: ");
-        String buyerName = input.nextLine();
-        System.out.print("Enter Buyer Email: ");
-        String buyerEmail = input.nextLine();
-        System.out.print("Enter Buyer Phone Number: ");
-        String buyerPhone = input.nextLine();
-        System.out.println("================================");
-
-        // Create Customer instance
-        Buyer buyer = new Buyer(buyerId, buyerName, buyerEmail, buyerPhone);
-
-        // Order processing
-        System.out.print("Enter Transaction ID: ");
-        String transactionId = input.nextLine();
-        Date transactionDate = new Date();
-
-        Purchase purchase = new Purchase(transactionId, transactionDate);
-        purchase.addItem(apparel);
-        buyer.completePurchase(purchase);
-        purchase.displayPurchaseSummary();
-
-        input.close();
-    }
-}
-
-// Apparel class
 class Apparel {
-    public String code;
-    public String title;
+    public String productId;
+    public String productName;
     public String details;
-    public String size;
-    public String color;
-    public double price;
-    public int stock;
-    public Material material;
+    public String dimensions;
+    public String shade;
+    public double pricePerUnit;
+    public int stockAvailable;
 
-    public Apparel(String code, String title, String details, String size, String color, double price, int stock, Material material) {
-        this.code = code;
-        this.title = title;
+    
+    public Apparel(String productId, String productName, String details, String dimensions, String shade, double pricePerUnit, int stockAvailable) {
+        this.productId = productId;
+        this.productName = productName;
         this.details = details;
-        this.size = size;
-        this.color = color;
-        this.price = price;
-        this.stock = stock;
-        this.material = material;
+        this.dimensions = dimensions;
+        this.shade = shade;
+        this.pricePerUnit = pricePerUnit;
+        this.stockAvailable = stockAvailable;
     }
 
-    void modifyStock(int newStock) {
-        this.stock = newStock;
+    void updateStock(int updatedStock) {
+        this.stockAvailable = updatedStock;
     }
 
-    double computeDiscountedPrice(double discountRate) {
-        return price - (price * discountRate / 100);
+    double getDiscountedPrice(double discountPercentage) {
+        return pricePerUnit - (pricePerUnit * discountPercentage / 100);
     }
 }
 
-// Material class
-class Material {
-    public String code;
+class Textile {
+    public String textileId;
     public String category;
-    public String shade;
+    public String colorShade;
     public double costPerUnit;
 
-    public Material(String code, String category, String shade, double costPerUnit) {
-        this.code = code;
+    
+    public Textile(String textileId, String category, String colorShade, double costPerUnit) {
+        this.textileId = textileId;
         this.category = category;
-        this.shade = shade;
+        this.colorShade = colorShade;
         this.costPerUnit = costPerUnit;
     }
-  double calculateTotalCost(double length) {
+
+    double calculateCost(double length) {
         return length * costPerUnit;
     }
 }
 
-// Buyer class
-class Buyer {
-    public String id;
-    public String name;
-    public String email;
-    public String phone;
-    public List<Purchase> purchaseHistory;
+class Distributor {
+    public String distributorId;
+    public String distributorName;
+    public String contact;
+    List<Textile> suppliedTextiles;
 
-    public Buyer(String id, String name, String email, String phone) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.purchaseHistory = new ArrayList<>();
+    
+    public Distributor(String distributorId, String distributorName, String contact) {
+        this.distributorId = distributorId;
+        this.distributorName = distributorName;
+        this.contact = contact;
+        this.suppliedTextiles = new ArrayList<>();
     }
 
-    void completePurchase(Purchase purchase) {
-        purchaseHistory.add(purchase);
-        System.out.println("Purchase successful!");
+    void provideTextile(Textile textile) {
+        suppliedTextiles.add(textile);
     }
 
-    List<Purchase> getPurchaseHistory() {
-        return purchaseHistory;
+    List<Textile> getSuppliedTextiles() {
+        return suppliedTextiles;
     }
 }
 
-// Purchase class
-class Purchase {
+class Transaction {
     public String transactionId;
     public Date transactionDate;
     public List<Apparel> purchasedItems;
-    private double totalPrice;
+    private double totalCost;
 
-    public Purchase(String transactionId, Date transactionDate) {
+    
+    public Transaction(String transactionId) {
         this.transactionId = transactionId;
-        this.transactionDate = transactionDate;
+        this.transactionDate = new Date();
         this.purchasedItems = new ArrayList<>();
     }
 
@@ -167,24 +92,85 @@ class Purchase {
         purchasedItems.add(item);
     }
 
-    double computeTotalPrice() {
-        totalPrice = 0; // Reset total before calculating
+    double computeTotalCost() {
+        totalCost = 0; // Reset total before computation
         for (Apparel item : purchasedItems) {
-            totalPrice += item.price;
+            totalCost += item.pricePerUnit;
         }
-        return totalPrice;
+        return totalCost;
     }
 
-    void displayPurchaseSummary() {
-        System.out.println("====== Purchase Details ======");
+    void showTransactionDetails() {
+        System.out.println("----- Transaction Summary -----");
         System.out.println("Transaction ID: " + transactionId);
-        System.out.println("Transaction Date: " + transactionDate);
+        System.out.println("Date: " + transactionDate);
         for (Apparel item : purchasedItems) {
-            System.out.println("Item: " + item.title);
-            System.out.println("Price: $" + item.price);
-            System.out.println("Details: " + item.details);
+            System.out.println("Item: " + item.productName + " | Price: $" + item.pricePerUnit);
         }
-        System.out.println("Total Amount: $" + computeTotalPrice());
+        System.out.println("Total Cost: $" + totalCost);
     }
 }
-  
+
+class Buyer {
+    public String buyerId;
+    public String name;
+    public String email;
+    public String phone;
+
+    
+    public Buyer(String buyerId, String name, String email, String phone) {
+        this.buyerId = buyerId;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+    }
+
+    void completeTransaction(Transaction transaction) {
+        transaction.showTransactionDetails();
+        System.out.println("Transaction Completed!");
+    }
+}
+
+class InventorySystem {
+    List<Apparel> inventory;
+
+    public InventorySystem() {
+        inventory = new ArrayList<>();
+    }
+
+    void addItem(Apparel item) {
+        inventory.add(item);
+    }
+
+    void removeItem(String productId) {
+        inventory.removeIf(item -> item.productId.equals(productId));
+    }
+    Apparel findItem(String productId) {
+        for (Apparel item : inventory) {
+            if (item.productId.equals(productId)) {
+                return item;
+            }
+        }
+        return null;
+    }
+}
+
+public class ApparelSystem {
+    public static void main(String[] args) {
+        Apparel item1 = new Apparel("A101", "Silk Top", "Soft and luxurious", "M", "Pink", 30.00, 100);
+        Apparel item2 = new Apparel("A102", "Linen Pants", "Breathable and comfortable", "L", "Gray", 45.00, 50);
+
+        InventorySystem inventory = new InventorySystem();
+        inventory.addItem(item1);
+        inventory.addItem(item2);
+
+        double discountedPrice = item1.getDiscountedPrice(10);
+        System.out.println("Discounted Price for " + item1.productName + ": $" + discountedPrice);
+
+        Buyer buyer = new Buyer("B001", "Jane Smith", "jane.smith@example.com", "987-654-3210");
+        Transaction transaction = new Transaction("T001");
+        transaction.addItem(item1);
+        buyer.completeTransaction(transaction);
+    }
+}
+    
